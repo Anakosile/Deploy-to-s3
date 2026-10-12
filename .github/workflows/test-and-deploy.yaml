@@ -1,0 +1,95 @@
+name: Test and/or Deploy to AWS
+
+on: 
+  push:
+    branches: 
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+run-name: Test or deploy to AWS active!
+
+# So if we have a concurrency block we put it here rii after triger block
+
+concurrency:
+  group: concurrencyShii-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true 
+
+# After the concurrency block define ya env variables next
+
+env:
+  AWS_REGION: us-east-1
+  S3_BUCKET: anakosile-s3-bucket
+
+# Then we set our default permissions
+
+permissions:
+  contents: read 
+
+jobs:
+  test: 
+    name: Instance of Node ${{ matrix.node }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix: 
+        node: ["22", "24"] 
+    steps: 
+      - name: checkout repo
+        uses: actions/checkout@v4
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: show project configuration
+        run: |
+          echo "Welcome to my practice sandbox"
+          echo "Node version: $( node --version )"
+          echo "My regios is: $AWS_REGION"
+
+      - name: Run tests
+        run: npm test
+
+      - name: Check for failure
+        if: failure()
+        run: echo "Test for Node version: ${{ matrix.node }} "
+
+      - name: Report test failure
+        if: failure()
+        run: echo "Tests failed for Node ${{ matrix.node }} failed" 
+
+  Deploy:
+    name: Deploy to AWS
+    needs: test
+    runs-on: ubuntu-24.04
+    if: github.event_name == "push" && github.ref == "refs/heads/main"
+    concurrency:
+      group: jobLevel-${{ env.S3_BUCKET }}
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: checkout repo
+        uses: actions/checkout@v4
+
+      - name: auth w AWS
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: arn:aws:iam::264267065910:role/github-action-role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Verify AWS identity
+        run: aws sts get-caller-identity
+
+      - name: Upload website to aws using aws cli commands
+        run: |
+          echo "Deploying to s3"
+          aws s3 sync ./site "s3://$S3_BUCKET/"
+          echo "Successfuly done king" 
+      
+
