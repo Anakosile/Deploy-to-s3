@@ -59,7 +59,7 @@ jobs:
     name: Deploy to AWS
     needs: test
     runs-on: ubuntu-24.04
-    if: github.event_name == 'push' && github.ref == 'refs/heads/mythic'
+    if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/mythic'
     permissions:
       contents: read
       id-token: write
