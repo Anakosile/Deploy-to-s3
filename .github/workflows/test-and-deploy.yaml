@@ -44,7 +44,7 @@ jobs:
 
       - name: show project configuration
         run: |
-          echo "Welcome to my practice sandbox"
+          echo "Welcome to my practice sandbox with node ${{ matrix.node }}"
           echo "Node version: $( node --version )"
           echo "My regios is: $AWS_REGION"
 
