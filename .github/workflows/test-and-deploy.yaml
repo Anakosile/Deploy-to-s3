@@ -2,11 +2,8 @@ name: Test and/or Deploy to AWS
 
 on: 
   push:
-    branches: 
-      - main
-  pull_request:
     branches:
-      - main
+      - mythic
   workflow_dispatch:
 
 run-name: Test or deploy to AWS active!
@@ -62,7 +59,7 @@ jobs:
     name: Deploy to AWS
     needs: test
     runs-on: ubuntu-24.04
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/mythic'
     permissions:
       contents: read
       id-token: write
