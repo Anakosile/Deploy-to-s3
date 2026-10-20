@@ -28,7 +28,7 @@ permissions:
 jobs:
   test: 
     name: Instance of Node ${{ matrix.node }}
-    runs-on: $ {{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix: 
@@ -48,7 +48,7 @@ jobs:
           echo "Welcome to my practice sandbox with node ${{ matrix.node }}"
           echo "Node version: $( node --version )"
           echo "My regios is: $AWS_REGION"
-          echo "My OS is: ${{ matrix.os }}
+          echo "My OS is: ${{ matrix.os }}"
 
       - name: Run tests
         run: npm test
