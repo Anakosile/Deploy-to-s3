@@ -60,6 +60,7 @@ jobs:
   Deploy:
     name: Deploy to AWS
     needs: test
+    environment: prod
     runs-on: ubuntu-24.04
     if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/prod'
     permissions:
